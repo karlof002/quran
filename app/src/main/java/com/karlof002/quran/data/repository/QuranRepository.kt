@@ -8,7 +8,8 @@ class QuranRepository(
     private val surahDao: SurahDao,
     private val juzDao: JuzDao,
     private val ayahDao: AyahDao,
-    private val bookmarkDao: BookmarkDao
+    private val bookmarkDao: BookmarkDao,
+    private val settingsDao: SettingsDao
 ) {
     // Surah operations
     fun getAllSurahs(): LiveData<List<Surah>> = surahDao.getAllSurahs()
@@ -32,6 +33,15 @@ class QuranRepository(
     suspend fun removeBookmarkByPage(pageNumber: Int) = bookmarkDao.deleteByPage(pageNumber)
     suspend fun isPageBookmarked(pageNumber: Int): Boolean = bookmarkDao.isPageBookmarked(pageNumber)
 
+    // Settings operations
+    fun getSettings(): LiveData<Settings?> = settingsDao.getSettings()
+    suspend fun getSettingsSync(): Settings? = settingsDao.getSettingsSync()
+    suspend fun updateSettings(settings: Settings) = settingsDao.updateSettings(settings)
+    suspend fun updateDarkMode(isDarkMode: Boolean) = settingsDao.updateDarkMode(isDarkMode)
+    suspend fun updateFontSize(fontSize: Int) = settingsDao.updateFontSize(fontSize)
+    suspend fun updateArabicFont(arabicFont: String) = settingsDao.updateArabicFont(arabicFont)
+    suspend fun updateTranslationLanguage(language: String) = settingsDao.updateTranslationLanguage(language)
+
     // Data initialization
     suspend fun initializeData() {
         // Check if data already exists by counting surahs directly
@@ -43,6 +53,19 @@ class QuranRepository(
 
             surahDao.insertAll(sampleSurahs)
             juzDao.insertAll(sampleJuz)
+        }
+
+        // Initialize default settings if they don't exist
+        val existingSettings = settingsDao.getSettingsSync()
+        if (existingSettings == null) {
+            val defaultSettings = Settings(
+                id = 1,
+                isDarkMode = false,
+                fontSize = 16,
+                arabicFont = "Default",
+                translationLanguage = "English"
+            )
+            settingsDao.insertSettings(defaultSettings)
         }
     }
 

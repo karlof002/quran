@@ -38,6 +38,3 @@ abstract class QuranDatabase : RoomDatabase() {
         }
     }
 }
-
-// Database will be implemented later when needed
-// For now, ViewModels are using in-memory data

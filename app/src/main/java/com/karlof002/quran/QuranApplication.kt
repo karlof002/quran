@@ -6,14 +6,40 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
+import com.karlof002.quran.data.database.QuranDatabase
+import com.karlof002.quran.data.repository.QuranRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class QuranApplication : Application(), ImageLoaderFactory {
+
+    // Database and Repository
+    val database by lazy { QuranDatabase.getDatabase(this) }
+    val repository by lazy {
+        QuranRepository(
+            database.surahDao(),
+            database.juzDao(),
+            database.ayahDao(),
+            database.bookmarkDao(),
+            database.settingsDao()
+        )
+    }
 
     override fun onCreate() {
         super.onCreate()
 
         // Setup crash handler for JNI errors
         setupCrashHandler()
+
+        // Initialize database with data
+        initializeDatabase()
+    }
+
+    private fun initializeDatabase() {
+        CoroutineScope(Dispatchers.IO).launch {
+            repository.initializeData()
+        }
     }
 
     private fun setupCrashHandler() {
