@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Quran Al Kareem</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="settings">Settings</string>
+    <string name="welcome_title">مرحباً بك في القرآن الكريم</string>
+    <string name="welcome_subtitle">Welcome to the Holy Quran</string>
+    <string name="surahs">Surahs</string>
+    <string name="juz">Juz</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="continue_reading">Continue Reading</string>
+    <string name="last_read">Last Read</string>
+    <string name="search_hint">Search in Quran...</string>
+    <string name="no_bookmarks">No bookmarks yet</string>
+    <string name="bookmark_instruction">Bookmark verses to save them for later</string>
+    <string name="no_results">No results found</string>
+    <string name="search_suggestion">Try different keywords or check your spelling</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="font_size">Font Size</string>
+    <string name="translation_language">Translation Language</string>
+    <string name="arabic_font">Arabic Font</string>
+    <string name="audio_settings">Audio Settings</string>
+    <string name="download_audio">Download Audio</string>
+    <string name="about_app">About App</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="contact_us">Contact Us</string>
+</resources>
