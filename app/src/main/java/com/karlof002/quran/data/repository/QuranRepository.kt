@@ -7,23 +7,13 @@ import com.karlof002.quran.data.models.*
 class QuranRepository(
     private val surahDao: SurahDao,
     private val juzDao: JuzDao,
-    private val ayahDao: AyahDao,
     private val bookmarkDao: BookmarkDao
 ) {
     // Surah operations
     fun getAllSurahs(): LiveData<List<Surah>> = surahDao.getAllSurahs()
-    suspend fun getSurahById(id: Int): Surah? = surahDao.getSurahById(id)
-    suspend fun getSurahByPage(pageNumber: Int): Surah? = surahDao.getSurahByPage(pageNumber)
-    suspend fun searchSurahs(query: String): List<Surah> = surahDao.searchSurahs(query)
 
     // Juz operations
     fun getAllJuz(): LiveData<List<Juz>> = juzDao.getAllJuz()
-    suspend fun getJuzById(id: Int): Juz? = juzDao.getJuzById(id)
-
-    // Ayah operations
-    suspend fun getAyahsBySurah(surahId: Int): List<Ayah> = ayahDao.getAyahsBySurah(surahId)
-    suspend fun getAyahsByJuz(juzId: Int): List<Ayah> = ayahDao.getAyahsByJuz(juzId)
-    suspend fun searchAyahs(query: String): List<Ayah> = ayahDao.searchAyahs(query)
 
     // Bookmark operations
     fun getAllBookmarks(): LiveData<List<Bookmark>> = bookmarkDao.getAllBookmarks()
