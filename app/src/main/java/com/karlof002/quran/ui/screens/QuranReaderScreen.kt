@@ -188,7 +188,8 @@ fun QuranReaderScreen(
                 database.surahDao(),
                 database.juzDao(),
                 database.ayahDao(),
-                database.bookmarkDao()
+                database.bookmarkDao(),
+                database.settingsDao()
             )
 
             // Initialize data and wait for it to complete
