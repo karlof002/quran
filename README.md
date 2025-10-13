@@ -34,7 +34,6 @@ A beautiful and modern Android application for reading the Holy Quran, built wit
 
 ### Setup
 
-1. Clone the repository:
 ```bash
 git clone https://github.com/karlof002/quran.git
 cd quran
