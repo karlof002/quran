@@ -177,7 +177,17 @@ fun QuranApp(
                     composable("settings") {
                         SettingsScreen(
                             viewModel = settingsViewModel,
-                            windowSize = windowSize
+                            windowSize = windowSize,
+                            onNavigateToDonation = {
+                                navController.navigate("donation")
+                            }
+                        )
+                    }
+
+                    // Donation screen
+                    composable("donation") {
+                        DonationScreen(
+                            onBackClick = { navController.navigateUp() }
                         )
                     }
 
@@ -304,7 +314,17 @@ fun QuranApp(
                         composable("settings") {
                             SettingsScreen(
                                 viewModel = settingsViewModel,
-                                windowSize = windowSize
+                                windowSize = windowSize,
+                                onNavigateToDonation = {
+                                    navController.navigate("donation")
+                            }
+                        )
+                        }
+
+                        // Donation screen
+                        composable("donation") {
+                            DonationScreen(
+                                onBackClick = { navController.navigateUp() }
                             )
                         }
 
@@ -389,7 +409,17 @@ fun QuranApp(
                         composable("settings") {
                             SettingsScreen(
                                 viewModel = settingsViewModel,
-                                windowSize = windowSize
+                                windowSize = windowSize,
+                                onNavigateToDonation = {
+                                    navController.navigate("donation")
+                            }
+                        )
+                        }
+
+                        // Donation screen
+                        composable("donation") {
+                            DonationScreen(
+                                onBackClick = { navController.navigateUp() }
                             )
                         }
 
