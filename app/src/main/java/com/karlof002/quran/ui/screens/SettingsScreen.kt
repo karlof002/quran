@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,14 +28,14 @@ import com.karlof002.quran.ui.screens.settings.*
 fun SettingsScreen(
     viewModel: SettingsViewModel = viewModel(),
     windowSize: com.karlof002.quran.ui.utils.WindowSizeClass = com.karlof002.quran.ui.utils.WindowSizeClass.COMPACT,
-    onNavigateToDonation: () -> Unit = {}
+    onNavigateToDonation: () -> Unit = {},
+    onNavigateToAbout: () -> Unit = {}
 ) {
     val isDarkMode by viewModel.isDarkMode.observeAsState(false)
     val fontSize by viewModel.fontSize.observeAsState(16f)
     val infoTextSize by viewModel.infoTextSize.observeAsState(14f)
     val context = LocalContext.current
 
-    var showAboutDialog by remember { mutableStateOf(false) }
     var showContactSheet by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
     val contactSheetState = rememberModalBottomSheetState()
@@ -70,7 +71,7 @@ fun SettingsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .widthIn(max = 600.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
+                contentPadding = PaddingValues(vertical = 12.dp)
             ) {
                 // Display Section
                 item { SettingsSectionHeader(title = "DISPLAY") }
@@ -81,10 +82,11 @@ fun SettingsScreen(
                         subtitle = "Switch between light and dark theme",
                         icon = Icons.Default.DarkMode,
                         isChecked = isDarkMode,
-                        onCheckedChange = { viewModel.setDarkMode(it) }
+                        onCheckedChange = { viewModel.setDarkMode(it) },
+                        iconColor = Color(0xFF5E35B1),
+                        iconBackgroundColor = Color(0xFF5E35B1).copy(alpha = 0.12f)
                     )
                 }
-                item { Spacer(modifier = Modifier.height(1.dp)) }
                 item {
                     SettingsSliderItem(
                         title = "Font Size",
@@ -93,10 +95,11 @@ fun SettingsScreen(
                         value = fontSize,
                         onValueChange = { viewModel.setFontSize(it) },
                         valueRange = 12f..24f,
-                        steps = 23
+                        steps = 23,
+                        iconColor = Color(0xFF1E88E5),
+                        iconBackgroundColor = Color(0xFF1E88E5).copy(alpha = 0.12f)
                     )
                 }
-                item { Spacer(modifier = Modifier.height(1.dp)) }
                 item {
                     SettingsSliderItem(
                         title = "Info Text Size",
@@ -105,12 +108,14 @@ fun SettingsScreen(
                         value = infoTextSize,
                         onValueChange = { viewModel.setInfoTextSize(it) },
                         valueRange = 10f..18f,
-                        steps = 15
+                        steps = 15,
+                        iconColor = Color(0xFF00ACC1),
+                        iconBackgroundColor = Color(0xFF00ACC1).copy(alpha = 0.12f)
                     )
                 }
 
                 // App Info Section
-                item { Spacer(modifier = Modifier.height(32.dp)) }
+                item { Spacer(modifier = Modifier.height(28.dp)) }
                 item { SettingsSectionHeader(title = "APP INFO") }
                 item { Spacer(modifier = Modifier.height(4.dp)) }
                 item {
@@ -118,10 +123,11 @@ fun SettingsScreen(
                         title = "About App",
                         subtitle = "Learn more about this app",
                         icon = Icons.Default.Info,
-                        onClick = { showAboutDialog = true }
+                        onClick = { onNavigateToAbout() },
+                        iconColor = Color(0xFF43A047),
+                        iconBackgroundColor = Color(0xFF43A047).copy(alpha = 0.12f)
                     )
                 }
-                item { Spacer(modifier = Modifier.height(1.dp)) }
                 item {
                     SettingsClickableItem(
                         title = "Rate App",
@@ -131,7 +137,9 @@ fun SettingsScreen(
                             val intent = Intent(Intent.ACTION_VIEW,
                                 "https://play.google.com/store/apps/details?id=com.karlof002.quran".toUri())
                             context.startActivity(intent)
-                        }
+                        },
+                        iconColor = Color(0xFFFFA726),
+                        iconBackgroundColor = Color(0xFFFFA726).copy(alpha = 0.12f)
                     )
                 }
 
@@ -148,7 +156,9 @@ fun SettingsScreen(
                             val intent = Intent(Intent.ACTION_VIEW,
                                 "https://play.google.com/store/apps/dev?id=4775249914643092447".toUri())
                             context.startActivity(intent)
-                        }
+                        },
+                        iconColor = Color(0xFF8E24AA),
+                        iconBackgroundColor = Color(0xFF8E24AA).copy(alpha = 0.12f)
                     )
                 }
 
@@ -165,22 +175,33 @@ fun SettingsScreen(
                             val intent = Intent(Intent.ACTION_VIEW,
                                 "https://quran.abd-dev.at/privacy".toUri())
                             context.startActivity(intent)
-                        }
+                        },
+                        iconColor = Color(0xFFE53935),
+                        iconBackgroundColor = Color(0xFFE53935).copy(alpha = 0.12f)
                     )
                 }
-                item { Spacer(modifier = Modifier.height(1.dp)) }
                 item {
                     SettingsClickableItem(
                         title = "Contact Support",
                         subtitle = "Get in touch with us",
                         icon = Icons.Default.Email,
-                        onClick = { showContactSheet = true }
+                        onClick = { showContactSheet = true },
+                        iconColor = Color(0xFF039BE5),
+                        iconBackgroundColor = Color(0xFF039BE5).copy(alpha = 0.12f)
                     )
                 }
-                item { Spacer(modifier = Modifier.height(1.dp)) }
 
-                // Donate Card
-                item { DonateCard(onClick = onNavigateToDonation) }
+                // Support Us Option
+                item {
+                    SettingsClickableItem(
+                        title = "Support Us",
+                        subtitle = "Help keep this app free for everyone",
+                        icon = Icons.Default.Favorite,
+                        onClick = onNavigateToDonation,
+                        iconColor = Color(0xFFEC407A),
+                        iconBackgroundColor = Color(0xFFEC407A).copy(alpha = 0.12f)
+                    )
+                }
 
                 // Bottom padding
                 item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -189,10 +210,6 @@ fun SettingsScreen(
     }
 
     // Dialogs and Bottom Sheets
-    if (showAboutDialog) {
-        AboutDialog(onDismiss = { showAboutDialog = false })
-    }
-
     if (showContactSheet) {
         ContactSupportBottomSheet(
             sheetState = contactSheetState,

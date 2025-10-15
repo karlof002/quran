@@ -35,6 +35,14 @@ class BookmarkViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun deleteBookmarks(bookmarks: List<Bookmark>) {
+        viewModelScope.launch {
+            bookmarks.forEach { bookmark ->
+                repository.removeBookmark(bookmark)
+            }
+        }
+    }
+
     suspend fun isPageBookmarked(pageNumber: Int): Boolean {
         return repository.isPageBookmarked(pageNumber)
     }

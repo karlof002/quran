@@ -176,7 +176,17 @@ fun QuranApp(
                             windowSize = windowSize,
                             onNavigateToDonation = {
                                 navController.navigate("donation")
+                            },
+                            onNavigateToAbout = {
+                                navController.navigate("about")
                             }
+                        )
+                    }
+
+                    // About screen
+                    composable("about") {
+                        AboutScreen(
+                            onBackClick = { navController.navigateUp() }
                         )
                     }
 
@@ -313,7 +323,17 @@ fun QuranApp(
                                 windowSize = windowSize,
                                 onNavigateToDonation = {
                                     navController.navigate("donation")
+                                },
+                                onNavigateToAbout = {
+                                    navController.navigate("about")
                                 }
+                            )
+                        }
+
+                        // About screen
+                        composable("about") {
+                            AboutScreen(
+                                onBackClick = { navController.navigateUp() }
                             )
                         }
 

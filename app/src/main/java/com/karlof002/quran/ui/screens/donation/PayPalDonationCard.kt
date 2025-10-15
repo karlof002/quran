@@ -3,6 +3,7 @@ package com.karlof002.quran.ui.screens.donation
 import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -26,13 +27,12 @@ fun PayPalDonationCard(
     context: Context,
     scope: CoroutineScope
 ) {
-    Card(
+    OutlinedCard(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 4.dp
+        shape = MaterialTheme.shapes.large,
+        border = BorderStroke(2.dp, Color(0xFF0070BA)),
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = Color.Transparent
         )
     ) {
         Column(
@@ -50,7 +50,7 @@ fun PayPalDonationCard(
                     text = "Donate via PayPal",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = Color(0xFF0070BA)
                 )
                 Text(text = "💝", fontSize = 24.sp)
             }
@@ -74,7 +74,7 @@ fun PayPalDonationCard(
                 label = "button scale"
             )
 
-            Button(
+            OutlinedButton(
                 onClick = {
                     buttonPressed = true
                     scope.launch {
@@ -92,10 +92,11 @@ fun PayPalDonationCard(
                     .fillMaxWidth()
                     .height(56.dp)
                     .scale(buttonScale),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF0070BA),
-                    contentColor = Color.White
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color(0xFF0070BA)
                 ),
+                border = BorderStroke(2.dp, Color(0xFF0070BA)),
                 shape = MaterialTheme.shapes.medium
             ) {
                 Row(
@@ -105,7 +106,8 @@ fun PayPalDonationCard(
                     Icon(
                         imageVector = Icons.Default.Favorite,
                         contentDescription = "Donate",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
+                        tint = Color(0xFF0070BA)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
@@ -118,4 +120,3 @@ fun PayPalDonationCard(
         }
     }
 }
-

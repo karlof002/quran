@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.ChecklistRtl
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -39,6 +42,11 @@ fun BookmarksScreen(
     var showDeleteDialog by remember { mutableStateOf(false) }
     var bookmarkToDelete by remember { mutableStateOf<Bookmark?>(null) }
 
+    // Selection mode state
+    var isSelectionMode by remember { mutableStateOf(false) }
+    var selectedBookmarks by remember { mutableStateOf(setOf<Long>()) } // Store bookmark IDs
+    var showDeleteMultipleDialog by remember { mutableStateOf(false) }
+
     // Load all surahs from database to get verse counts and juz numbers
     var allSurahs by remember { mutableStateOf<List<Surah>>(emptyList()) }
 
@@ -52,13 +60,20 @@ fun BookmarksScreen(
                 (1..114).mapNotNull { id ->
                     try {
                         database.surahDao().getSurahById(id)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         null
                     }
                 }
             }
-        } catch (e: Exception) {
-            android.util.Log.e("BookmarksScreen", "Error loading surahs", e)
+        } catch (_: Exception) {
+            android.util.Log.e("BookmarksScreen", "Error loading surahs")
+        }
+    }
+
+    // Exit selection mode when no bookmarks are selected
+    LaunchedEffect(selectedBookmarks.isEmpty()) {
+        if (selectedBookmarks.isEmpty() && isSelectionMode) {
+            isSelectionMode = false
         }
     }
 
@@ -118,29 +133,104 @@ fun BookmarksScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "Bookmarks",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                actions = {
-                    IconButton(onClick = { showFilterSheet = true }) {
-                        Icon(
-                            imageVector = Icons.Default.FilterList,
-                            contentDescription = "Filter",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+            if (isSelectionMode) {
+                // Selection mode top bar
+                TopAppBar(
+                    title = {
+                        Text(
+                            "${selectedBookmarks.size} selected",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
                         )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            isSelectionMode = false
+                            selectedBookmarks = emptySet()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Cancel selection",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    },
+                    actions = {
+                        // Select all / Deselect all button
+                        TextButton(
+                            onClick = {
+                                val allBookmarkIds = allBookmarks.map { it.id }.toSet()
+                                selectedBookmarks = if (selectedBookmarks.size == allBookmarks.size) {
+                                    emptySet()
+                                } else {
+                                    allBookmarkIds
+                                }
+                            }
+                        ) {
+                            Text(
+                                if (selectedBookmarks.size == allBookmarks.size) "Deselect All" else "Select All",
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        // Delete button
+                        IconButton(
+                            onClick = { showDeleteMultipleDialog = true },
+                            enabled = selectedBookmarks.isNotEmpty()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete selected",
+                                tint = if (selectedBookmarks.isNotEmpty())
+                                    MaterialTheme.colorScheme.error
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
                 )
-            )
+            } else {
+                // Normal mode top bar
+                TopAppBar(
+                    title = {
+                        Text(
+                            "Bookmarks",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    actions = {
+                        // Enter selection mode button
+                        if (allBookmarks.isNotEmpty()) {
+                            IconButton(onClick = { isSelectionMode = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.ChecklistRtl,
+                                    contentDescription = "Select bookmarks",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        IconButton(onClick = { showFilterSheet = true }) {
+                            Icon(
+                                imageVector = Icons.Default.FilterList,
+                                contentDescription = "Filter",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                )
+            }
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
@@ -171,6 +261,15 @@ fun BookmarksScreen(
                             val bookmark = section.bookmarks[index]
                             BookmarkListItem(
                                 bookmark = bookmark,
+                                isSelectionMode = isSelectionMode,
+                                isSelected = selectedBookmarks.contains(bookmark.id),
+                                onSelectionToggle = {
+                                    selectedBookmarks = if (selectedBookmarks.contains(bookmark.id)) {
+                                        selectedBookmarks - bookmark.id
+                                    } else {
+                                        selectedBookmarks + bookmark.id
+                                    }
+                                },
                                 onClick = {
                                     // Find the surah details for the clicked bookmark
                                     val surah = allSurahs.find { it.id == bookmark.surahId }
@@ -215,7 +314,7 @@ fun BookmarksScreen(
             )
         }
 
-        // Delete confirmation dialog
+        // Delete single bookmark confirmation dialog
         if (showDeleteDialog) {
             DeleteBookmarkDialog(
                 bookmark = bookmarkToDelete,
@@ -231,6 +330,25 @@ fun BookmarksScreen(
                 onDismiss = {
                     showDeleteDialog = false
                     bookmarkToDelete = null
+                }
+            )
+        }
+
+        // Delete multiple bookmarks confirmation dialog
+        if (showDeleteMultipleDialog) {
+            DeleteMultipleBookmarksDialog(
+                bookmarkCount = selectedBookmarks.size,
+                onConfirm = {
+                    val bookmarksToDelete = allBookmarks.filter { selectedBookmarks.contains(it.id) }
+                    scope.launch {
+                        viewModel.deleteBookmarks(bookmarksToDelete)
+                    }
+                    selectedBookmarks = emptySet()
+                    isSelectionMode = false
+                    showDeleteMultipleDialog = false
+                },
+                onDismiss = {
+                    showDeleteMultipleDialog = false
                 }
             )
         }
