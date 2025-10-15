@@ -186,7 +186,8 @@ fun QuranApp(
                     // About screen
                     composable("about") {
                         AboutScreen(
-                            onBackClick = { navController.navigateUp() }
+                            onBackClick = { navController.navigateUp() },
+                            windowSize = windowSize
                         )
                     }
 
@@ -333,7 +334,8 @@ fun QuranApp(
                         // About screen
                         composable("about") {
                             AboutScreen(
-                                onBackClick = { navController.navigateUp() }
+                                onBackClick = { navController.navigateUp() },
+                                windowSize = windowSize
                             )
                         }
 
