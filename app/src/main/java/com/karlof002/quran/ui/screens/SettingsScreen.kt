@@ -21,7 +21,6 @@ import androidx.core.net.toUri
 import com.karlof002.quran.ui.components.UpdateAvailableDialog
 import com.karlof002.quran.ui.utils.UpdateInfo
 import com.karlof002.quran.ui.screens.settings.*
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,16 +39,6 @@ fun SettingsScreen(
     var showUpdateDialog by remember { mutableStateOf(false) }
     val contactSheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
-
-    // Check if device is tablet
-    val isTablet = windowSize != com.karlof002.quran.ui.utils.WindowSizeClass.COMPACT
-
-    // Adaptive padding based on screen size
-    val horizontalPadding = when (windowSize) {
-        com.karlof002.quran.ui.utils.WindowSizeClass.COMPACT -> 0.dp
-        com.karlof002.quran.ui.utils.WindowSizeClass.MEDIUM -> 16.dp
-        com.karlof002.quran.ui.utils.WindowSizeClass.EXPANDED -> 32.dp
-    }
 
     Column(
         modifier = Modifier
@@ -229,4 +218,3 @@ fun SettingsScreen(
         )
     }
 }
-

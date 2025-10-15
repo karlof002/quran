@@ -313,8 +313,8 @@ fun QuranApp(
                                 windowSize = windowSize,
                                 onNavigateToDonation = {
                                     navController.navigate("donation")
-                            }
-                        )
+                                }
+                            )
                         }
 
                         // Donation screen
@@ -356,18 +356,49 @@ fun QuranApp(
             }
         }
         NavigationType.PERMANENT_NAVIGATION_DRAWER -> {
-            // Future implementation for very large screens
-            Row(modifier = Modifier.fillMaxSize()) {
-                if (showNavigation) {
-                    AdaptiveNavigationRail(
-                        currentDestination = currentDestination,
-                        onNavigate = navigateToRoute
-                    )
+            // For large screens with permanent navigation drawer
+            PermanentNavigationDrawer(
+                drawerContent = {
+                    PermanentDrawerSheet(
+                        modifier = Modifier.width(240.dp),
+                        drawerContainerColor = MaterialTheme.colorScheme.surface
+                    ) {
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        // App title/logo
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.MenuBook,
+                            contentDescription = "Quran Al-Kareem",
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .size(32.dp),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+
+                        navigationItems.forEach { item ->
+                            NavigationDrawerItem(
+                                icon = {
+                                    Icon(
+                                        item.icon,
+                                        contentDescription = item.title,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                },
+                                label = { Text(item.title) },
+                                selected = currentDestination?.hierarchy?.any { it.route == item.route } == true,
+                                onClick = { navigateToRoute(item.route) },
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
                 }
+            ) {
+                // Content area
                 Box(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight()
+                        .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
                 ) {
                     NavHost(
@@ -382,34 +413,30 @@ fun QuranApp(
                                 },
                                 onJuzClick = { juzId, startPage, endPage ->
                                     navController.navigate("reader/$startPage/$endPage/Juz $juzId/0/$juzId")
-                                },
-                                windowSize = windowSize
+                                }
                             )
                         }
                         composable("search") {
                             SearchScreen(
                                 onSurahClick = { surahId, startPage, surahName, verses, juzNumber ->
                                     navController.navigate("reader/$startPage/604/$surahName/$verses/$juzNumber")
-                                },
-                                windowSize = windowSize
+                                }
                             )
                         }
                         composable("bookmarks") {
                             BookmarksScreen(
                                 onBookmarkClick = { pageNumber, surahName, verses, juzNumber ->
                                     navController.navigate("reader/$pageNumber/604/$surahName/$verses/$juzNumber")
-                                },
-                                windowSize = windowSize
+                                }
                             )
                         }
                         composable("settings") {
                             SettingsScreen(
                                 viewModel = settingsViewModel,
-                                windowSize = windowSize,
                                 onNavigateToDonation = {
                                     navController.navigate("donation")
-                            }
-                        )
+                                }
+                            )
                         }
 
                         // Donation screen
@@ -442,8 +469,7 @@ fun QuranApp(
                                 title = title,
                                 verses = verses,
                                 juzNumber = juzNumber,
-                                onBackClick = { navController.navigateUp() },
-                                windowSize = windowSize
+                                onBackClick = { navController.navigateUp() }
                             )
                         }
                     }

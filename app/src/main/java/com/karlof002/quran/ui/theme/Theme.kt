@@ -9,10 +9,10 @@ import androidx.compose.ui.graphics.Color
 
 // Light Theme Colors - Softer Islamic Green Theme (Eye-friendly)
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFF00796B), // Darker, more visible green for navigation
+    primary = Color(0xFF006B5D), // Much darker green for better readability in navigation
     onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = Color(0xFFE0F2F1), // Much softer green container
-    onPrimaryContainer = Color(0xFF004D40), // Darker text for better contrast
+    primaryContainer = Color(0xFF80CBC4), // Darker, more visible green container for selected navigation items
+    onPrimaryContainer = Color(0xFF003D36), // Much darker text for better contrast
     secondary = Color(0xFF4A635F),
     onSecondary = Color(0xFFFFFFFF),
     secondaryContainer = Color(0xFFE8F5E8), // Soft green-tinted container
@@ -35,7 +35,7 @@ private val LightColorScheme = lightColorScheme(
     inverseOnSurface = Color(0xFFF4EFF4),
     inverseSurface = Color(0xFF313033),
     inversePrimary = Color(0xFF4DB6AC),
-    surfaceTint = Color(0xFF00796B), // Match primary for consistency
+    surfaceTint = Color(0xFF006B5D), // Match primary for consistency
     outlineVariant = Color(0xFFF1F3F4), // Very subtle borders
     scrim = Color(0xFF000000)
 )
