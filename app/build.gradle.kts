@@ -48,6 +48,11 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
+
+            // Generate native debug symbols for Google Play Console crash analysis
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
     }
     buildFeatures {
