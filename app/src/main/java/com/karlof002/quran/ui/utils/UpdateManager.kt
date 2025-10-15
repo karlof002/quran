@@ -39,10 +39,12 @@ class UpdateManager(private val context: Context) {
                         appUpdateInfo = appUpdateInfo
                     )
                 }
+
                 UpdateAvailability.UPDATE_NOT_AVAILABLE -> {
                     Log.d(TAG, "No update available")
                     UpdateInfo(isUpdateAvailable = false)
                 }
+
                 UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS -> {
                     Log.d(TAG, "Update in progress")
                     UpdateInfo(
@@ -51,6 +53,7 @@ class UpdateManager(private val context: Context) {
                         appUpdateInfo = appUpdateInfo
                     )
                 }
+
                 else -> {
                     Log.d(TAG, "Unknown update status")
                     UpdateInfo(isUpdateAvailable = false)

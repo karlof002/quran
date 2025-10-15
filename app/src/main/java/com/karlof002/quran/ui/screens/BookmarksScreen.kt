@@ -1,35 +1,24 @@
 package com.karlof002.quran.ui.screens
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BookmarkRemove
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.karlof002.quran.data.models.Bookmark
+import com.karlof002.quran.data.models.Surah
 import com.karlof002.quran.ui.viewmodel.BookmarkViewModel
+import com.karlof002.quran.ui.screens.bookmarks.*
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.util.*
-
-enum class DateFilter {
-    ALL, TODAY, THIS_WEEK, THIS_MONTH, OLDER
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +29,7 @@ fun BookmarksScreen(
 ) {
     val allBookmarks by viewModel.allBookmarks.observeAsState(emptyList())
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     var showFilterSheet by remember { mutableStateOf(false) }
     var selectedFilter by remember { mutableStateOf(DateFilter.ALL) }
@@ -48,6 +38,29 @@ fun BookmarksScreen(
     // State for delete confirmation dialog
     var showDeleteDialog by remember { mutableStateOf(false) }
     var bookmarkToDelete by remember { mutableStateOf<Bookmark?>(null) }
+
+    // Load all surahs from database to get verse counts and juz numbers
+    var allSurahs by remember { mutableStateOf<List<Surah>>(emptyList()) }
+
+    // Load surahs from database once
+    LaunchedEffect(Unit) {
+        try {
+            val database = com.karlof002.quran.data.database.QuranDatabase.getDatabase(context)
+            val surahs = database.surahDao().getAllSurahs().value ?: emptyList()
+            allSurahs = surahs.ifEmpty {
+                // Get surahs synchronously from database if LiveData is empty
+                (1..114).mapNotNull { id ->
+                    try {
+                        database.surahDao().getSurahById(id)
+                    } catch (e: Exception) {
+                        null
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("BookmarksScreen", "Error loading surahs", e)
+        }
+    }
 
     // Adaptive padding based on screen size
     val horizontalPadding = when (windowSize) {
@@ -137,34 +150,7 @@ fun BookmarksScreen(
                 .padding(paddingValues)
         ) {
             if (bookmarkSections.isEmpty()) {
-                // Empty state
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.BookmarkRemove,
-                            contentDescription = null,
-                            modifier = Modifier.size(64.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Text(
-                            text = if (selectedFilter == DateFilter.ALL) "No bookmarks yet" else "No bookmarks found",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = if (selectedFilter == DateFilter.ALL) "Bookmark pages while reading the Quran" else "Try a different filter",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
+                BookmarkEmptyState(selectedFilter = selectedFilter)
             } else {
                 // Bookmarks list with sections
                 LazyColumn(
@@ -186,7 +172,12 @@ fun BookmarksScreen(
                             BookmarkListItem(
                                 bookmark = bookmark,
                                 onClick = {
-                                    onBookmarkClick(bookmark.pageNumber, bookmark.surahName, 0, 0)
+                                    // Find the surah details for the clicked bookmark
+                                    val surah = allSurahs.find { it.id == bookmark.surahId }
+                                    val verseCount = surah?.verses ?: 0
+                                    val juzNumber = surah?.juz ?: 0
+
+                                    onBookmarkClick(bookmark.pageNumber, bookmark.surahName, verseCount, juzNumber)
                                 },
                                 onDeleteClick = {
                                     bookmarkToDelete = bookmark
@@ -212,283 +203,36 @@ fun BookmarksScreen(
             }
         }
 
-        // Filter Bottom Sheet using Material 3
+        // Filter Bottom Sheet
         if (showFilterSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showFilterSheet = false },
+            FilterBottomSheet(
                 sheetState = sheetState,
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface,
-                tonalElevation = 0.dp
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 24.dp)
-                ) {
-                    Text(
-                        text = "Filter by Date",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 16.dp)
-                    )
-
-                    FilterOption(
-                        title = "All Bookmarks",
-                        isSelected = selectedFilter == DateFilter.ALL,
-                        onClick = {
-                            scope.launch {
-                                selectedFilter = DateFilter.ALL
-                                sheetState.hide()
-                                showFilterSheet = false
-                            }
-                        }
-                    )
-
-                    FilterOption(
-                        title = "Today",
-                        isSelected = selectedFilter == DateFilter.TODAY,
-                        onClick = {
-                            scope.launch {
-                                selectedFilter = DateFilter.TODAY
-                                sheetState.hide()
-                                showFilterSheet = false
-                            }
-                        }
-                    )
-
-                    FilterOption(
-                        title = "This Week",
-                        isSelected = selectedFilter == DateFilter.THIS_WEEK,
-                        onClick = {
-                            scope.launch {
-                                selectedFilter = DateFilter.THIS_WEEK
-                                sheetState.hide()
-                                showFilterSheet = false
-                            }
-                        }
-                    )
-
-                    FilterOption(
-                        title = "This Month",
-                        isSelected = selectedFilter == DateFilter.THIS_MONTH,
-                        onClick = {
-                            scope.launch {
-                                selectedFilter = DateFilter.THIS_MONTH
-                                sheetState.hide()
-                                showFilterSheet = false
-                            }
-                        }
-                    )
-
-                    FilterOption(
-                        title = "Older",
-                        isSelected = selectedFilter == DateFilter.OLDER,
-                        onClick = {
-                            scope.launch {
-                                selectedFilter = DateFilter.OLDER
-                                sheetState.hide()
-                                showFilterSheet = false
-                            }
-                        }
-                    )
-                }
-            }
+                selectedFilter = selectedFilter,
+                onFilterSelected = { filter ->
+                    selectedFilter = filter
+                },
+                onDismiss = { showFilterSheet = false }
+            )
         }
 
         // Delete confirmation dialog
-        if (showDeleteDialog && bookmarkToDelete != null) {
-            AlertDialog(
-                onDismissRequest = {
+        if (showDeleteDialog) {
+            DeleteBookmarkDialog(
+                bookmark = bookmarkToDelete,
+                onConfirm = {
+                    bookmarkToDelete?.let { bookmark ->
+                        scope.launch {
+                            viewModel.deleteBookmark(bookmark)
+                        }
+                    }
                     showDeleteDialog = false
                     bookmarkToDelete = null
                 },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.BookmarkRemove,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(32.dp)
-                    )
-                },
-                title = {
-                    Text(
-                        "Delete Bookmark",
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                text = {
-                    Text(
-                        "Are you sure you want to delete the bookmark for page ${bookmarkToDelete?.pageNumber}?",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            // Delete the bookmark
-                            bookmarkToDelete?.let { bookmark ->
-                                scope.launch {
-                                    viewModel.deleteBookmark(bookmark)
-                                }
-                            }
-                            showDeleteDialog = false
-                            bookmarkToDelete = null
-                        }
-                    ) {
-                        Text("Delete", color = MaterialTheme.colorScheme.error)
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            showDeleteDialog = false
-                            bookmarkToDelete = null
-                        }
-                    ) {
-                        Text("Cancel")
-                    }
-                },
-                containerColor = MaterialTheme.colorScheme.surface
+                onDismiss = {
+                    showDeleteDialog = false
+                    bookmarkToDelete = null
+                }
             )
         }
     }
 }
-
-@Composable
-fun BookmarkListItem(
-    bookmark: Bookmark,
-    onClick: () -> Unit,
-    onDeleteClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        // Page Number Badge
-        Box(
-            modifier = Modifier
-                .size(44.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = bookmark.pageNumber.toString(),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-        }
-
-        // Bookmark Info
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Text(
-                text = "سورة ${bookmark.surahName}",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = "Page ${bookmark.pageNumber}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp
-            )
-
-            Text(
-                text = formatDate(bookmark.timestamp),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                fontSize = 12.sp
-            )
-        }
-
-        // Delete Button
-        IconButton(onClick = onDeleteClick) {
-            Icon(
-                imageVector = Icons.Default.BookmarkRemove,
-                contentDescription = "Delete bookmark",
-                tint = Color(0xFFEF4444),
-                modifier = Modifier.size(20.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun FilterOption(
-    title: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 20.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodyLarge,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-            fontSize = 16.sp
-        )
-
-        if (isSelected) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = "Selected",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-    }
-}
-
-fun formatDate(timestamp: Long): String {
-    val dateFormat = SimpleDateFormat("MMM dd, yyyy • hh:mm a", Locale.getDefault())
-    return dateFormat.format(Date(timestamp))
-}
-
-@Composable
-fun BookmarkSectionHeader(title: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontWeight = FontWeight.Bold,
-            fontSize = 14.sp,
-            letterSpacing = 0.5.sp
-        )
-    }
-}
-
-data class BookmarkSection(
-    val title: String,
-    val bookmarks: List<Bookmark>
-)

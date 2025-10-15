@@ -2,7 +2,6 @@ package com.karlof002.quran.ui.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -15,7 +14,7 @@ import com.karlof002.quran.ui.viewmodel.SettingsViewModel
  */
 
 // Base font size (what the app was designed with)
-private const val BASE_FONT_SIZE = 16
+private const val BASE_FONT_SIZE = 16f
 
 /**
  * Calculate the scaling factor based on user's font size preference
@@ -27,8 +26,8 @@ fun calculateScaleFactor(userFontSize: Int): Float {
 /**
  * Scale a font size based on user's preference
  */
-fun scaleFontSize(baseFontSize: Int, userFontSize: Int): TextUnit {
-    val scaleFactor = calculateScaleFactor(userFontSize)
+fun scaleFontSize(baseFontSize: Float, userFontSize: Float): TextUnit {
+    val scaleFactor = userFontSize / BASE_FONT_SIZE
     return (baseFontSize * scaleFactor).sp
 }
 
@@ -36,8 +35,8 @@ fun scaleFontSize(baseFontSize: Int, userFontSize: Int): TextUnit {
  * Scale a dimension (like image size, padding) based on user's font size preference
  * Images and other UI elements should scale proportionally but less aggressively than text
  */
-fun scaleSize(baseSize: Int, userFontSize: Int): Dp {
-    val scaleFactor = calculateScaleFactor(userFontSize)
+fun scaleSize(baseSize: Float, userFontSize: Float): Dp {
+    val scaleFactor = userFontSize / BASE_FONT_SIZE
     // Scale images and UI elements by square root of font scale for more balanced proportions
     val adjustedScaleFactor = kotlin.math.sqrt(scaleFactor.toDouble()).toFloat()
     return (baseSize * adjustedScaleFactor).dp
@@ -48,10 +47,10 @@ fun scaleSize(baseSize: Int, userFontSize: Int): Dp {
  */
 @Composable
 fun getScaledFontSize(
-    baseFontSize: Int,
+    baseFontSize: Float,
     settingsViewModel: SettingsViewModel = viewModel()
 ): TextUnit {
-    val userFontSize = settingsViewModel.fontSize.observeAsState(16).value
+    val userFontSize = settingsViewModel.fontSize.observeAsState(16f).value
     return scaleFontSize(baseFontSize, userFontSize)
 }
 
@@ -60,10 +59,10 @@ fun getScaledFontSize(
  */
 @Composable
 fun getScaledSize(
-    baseSize: Int,
+    baseSize: Float,
     settingsViewModel: SettingsViewModel = viewModel()
 ): Dp {
-    val userFontSize = settingsViewModel.fontSize.observeAsState(16).value
+    val userFontSize = settingsViewModel.fontSize.observeAsState(16f).value
     return scaleSize(baseSize, userFontSize)
 }
 
@@ -72,7 +71,7 @@ fun getScaledSize(
  */
 @Composable
 fun Int.scaledSp(settingsViewModel: SettingsViewModel = viewModel()): TextUnit {
-    return getScaledFontSize(this, settingsViewModel)
+    return getScaledFontSize(this.toFloat(), settingsViewModel)
 }
 
 /**
@@ -80,5 +79,5 @@ fun Int.scaledSp(settingsViewModel: SettingsViewModel = viewModel()): TextUnit {
  */
 @Composable
 fun Int.scaledDp(settingsViewModel: SettingsViewModel = viewModel()): Dp {
-    return getScaledSize(this, settingsViewModel)
+    return getScaledSize(this.toFloat(), settingsViewModel)
 }

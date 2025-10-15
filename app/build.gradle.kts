@@ -94,12 +94,15 @@ dependencies {
     // Coil for image loading
     implementation(libs.coil.compose)
 
+    // Gson for JSON parsing
+    implementation(libs.gson)
+
     // Google Play Core for in-app updates
-    implementation("com.google.android.play:app-update:2.1.0")
-    implementation("com.google.android.play:app-update-ktx:2.1.0")
+    implementation(libs.app.update)
+    implementation(libs.app.update.ktx)
 
     // Kotlin coroutines extensions for Google Play Core
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
+    implementation(libs.kotlinx.coroutines.play.services)
 
     // Testing
     testImplementation(libs.junit)

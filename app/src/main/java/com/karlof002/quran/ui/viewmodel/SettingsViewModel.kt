@@ -16,14 +16,17 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val _isDarkMode = MutableLiveData(false)
     val isDarkMode: LiveData<Boolean> = _isDarkMode
 
-    private val _fontSize = MutableLiveData(16)
-    val fontSize: LiveData<Int> = _fontSize
+    private val _fontSize = MutableLiveData(16f)
+    val fontSize: LiveData<Float> = _fontSize
 
     private val _arabicFont = MutableLiveData("Default")
     val arabicFont: LiveData<String> = _arabicFont
 
     private val _translationLanguage = MutableLiveData("English")
     val translationLanguage: LiveData<String> = _translationLanguage
+
+    private val _infoTextSize = MutableLiveData(14f)
+    val infoTextSize: LiveData<Float> = _infoTextSize
 
     val settings: LiveData<Settings?> = repository.getSettings()
 
@@ -36,6 +39,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 _fontSize.postValue(currentSettings.fontSize)
                 _arabicFont.postValue(currentSettings.arabicFont)
                 _translationLanguage.postValue(currentSettings.translationLanguage)
+                _infoTextSize.postValue(currentSettings.infoTextSize)
             }
         }
     }
@@ -47,7 +51,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun setFontSize(size: Int) {
+    fun setFontSize(size: Float) {
         _fontSize.value = size
         viewModelScope.launch {
             repository.updateFontSize(size)
@@ -68,6 +72,13 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun setInfoTextSize(size: Float) {
+        _infoTextSize.value = size
+        viewModelScope.launch {
+            repository.updateInfoTextSize(size)
+        }
+    }
+
     fun updateSettings(settings: Settings) {
         viewModelScope.launch {
             repository.updateSettings(settings)
@@ -76,6 +87,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             _fontSize.postValue(settings.fontSize)
             _arabicFont.postValue(settings.arabicFont)
             _translationLanguage.postValue(settings.translationLanguage)
+            _infoTextSize.postValue(settings.infoTextSize)
         }
     }
 }

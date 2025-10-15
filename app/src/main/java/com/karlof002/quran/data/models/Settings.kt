@@ -8,7 +8,8 @@ data class Settings(
     @PrimaryKey
     val id: Int = 1, // Single row for settings
     val isDarkMode: Boolean = false,
-    val fontSize: Int = 16,
+    val fontSize: Float = 16f,
     val arabicFont: String = "Default",
-    val translationLanguage: String = "English"
+    val translationLanguage: String = "English",
+    val infoTextSize: Float = 14f
 )

@@ -22,7 +22,8 @@ class QuranApplication : Application(), ImageLoaderFactory {
             database.juzDao(),
             database.ayahDao(),
             database.bookmarkDao(),
-            database.settingsDao()
+            database.settingsDao(),
+            this  // Pass application context
         )
     }
 

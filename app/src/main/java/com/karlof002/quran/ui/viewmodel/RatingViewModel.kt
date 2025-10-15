@@ -1,11 +1,11 @@
 package com.karlof002.quran.ui.viewmodel
 
 import android.app.Application
+import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import androidx.core.content.edit
 
 class RatingViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPreferences = application.getSharedPreferences("app_preferences", 0)

@@ -8,13 +8,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
-// Simple UpdateInfo data class for demo purposes
-data class UpdateInfo(
-    val version: String,
-    val description: String,
-    val url: String
-)
+import com.karlof002.quran.ui.utils.UpdateInfo
 
 @Composable
 fun UpdateAvailableDialog(
@@ -46,13 +40,13 @@ fun UpdateAvailableDialog(
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "A new version (${updateInfo.version}) of Quran Al-Kareem is available on the Google Play Store.",
+                    text = "A new version of Quran Al-Kareem is available on the Google Play Store.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = updateInfo.description,
+                    text = "Update now to get the latest features and improvements.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

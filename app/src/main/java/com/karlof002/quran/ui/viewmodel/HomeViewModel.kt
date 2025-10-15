@@ -3,8 +3,8 @@ package com.karlof002.quran.ui.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import com.karlof002.quran.QuranApplication
 import com.karlof002.quran.data.models.Juz
 import com.karlof002.quran.data.models.Surah
@@ -49,10 +49,5 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
             _juzSections.value = sections
         }
-    }
-
-    fun refreshData() {
-        // Data will automatically refresh through LiveData observers
-        // No manual reload needed since database initialization happens in Application
     }
 }

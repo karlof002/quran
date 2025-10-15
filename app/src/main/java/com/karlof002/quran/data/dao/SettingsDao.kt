@@ -22,11 +22,14 @@ interface SettingsDao {
     suspend fun updateDarkMode(isDarkMode: Boolean)
 
     @Query("UPDATE settings SET fontSize = :fontSize WHERE id = 1")
-    suspend fun updateFontSize(fontSize: Int)
+    suspend fun updateFontSize(fontSize: Float)
 
     @Query("UPDATE settings SET arabicFont = :arabicFont WHERE id = 1")
     suspend fun updateArabicFont(arabicFont: String)
 
     @Query("UPDATE settings SET translationLanguage = :language WHERE id = 1")
     suspend fun updateTranslationLanguage(language: String)
+
+    @Query("UPDATE settings SET infoTextSize = :infoTextSize WHERE id = 1")
+    suspend fun updateInfoTextSize(infoTextSize: Float)
 }
