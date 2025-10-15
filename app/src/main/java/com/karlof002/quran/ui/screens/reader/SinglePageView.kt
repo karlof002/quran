@@ -33,9 +33,7 @@ fun SinglePageView(
         // Bottom info bar - centered at the bottom
         Box(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .align(Alignment.BottomCenter),
             contentAlignment = Alignment.Center
         ) {
             if (currentSurahInfo != null) {
