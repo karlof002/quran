@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -26,7 +25,7 @@ fun AnimatedHeartIcon(
             .size(size)
             .scale(heartScale)
             .background(
-                Color(0xFFEC407A).copy(alpha = 0.15f),
+                MaterialTheme.colorScheme.primaryContainer,
                 shape = MaterialTheme.shapes.extraLarge
             ),
         contentAlignment = Alignment.Center
@@ -34,7 +33,7 @@ fun AnimatedHeartIcon(
         Icon(
             imageVector = Icons.Default.Favorite,
             contentDescription = "Support",
-            tint = Color(0xFFEC407A),
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(iconSize)
         )
     }

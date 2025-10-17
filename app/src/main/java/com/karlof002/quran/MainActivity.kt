@@ -158,8 +158,7 @@ fun QuranApp(
                         SearchScreen(
                             onSurahClick = { surahId, startPage, surahName, verses, juzNumber ->
                                 navController.navigate("reader/$startPage/604/$surahName/$verses/$juzNumber")
-                            },
-                            windowSize = windowSize
+                            }
                         )
                     }
                     composable("bookmarks") {
@@ -306,8 +305,7 @@ fun QuranApp(
                             SearchScreen(
                                 onSurahClick = { surahId, startPage, surahName, verses, juzNumber ->
                                     navController.navigate("reader/$startPage/604/$surahName/$verses/$juzNumber")
-                                },
-                                windowSize = windowSize
+                                }
                             )
                         }
                         composable("bookmarks") {

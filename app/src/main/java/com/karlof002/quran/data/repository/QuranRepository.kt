@@ -37,9 +37,12 @@ class QuranRepository(
 
     // Bookmark operations
     fun getAllBookmarks(): LiveData<List<Bookmark>> = bookmarkDao.getAllBookmarks()
+    suspend fun getAllBookmarksSync(): List<Bookmark> = bookmarkDao.getAllBookmarksSync()
     suspend fun addBookmark(bookmark: Bookmark) = bookmarkDao.insert(bookmark)
+    suspend fun addBookmarks(bookmarks: List<Bookmark>) = bookmarkDao.insertAll(bookmarks)
     suspend fun removeBookmark(bookmark: Bookmark) = bookmarkDao.delete(bookmark)
     suspend fun removeBookmarkByPage(pageNumber: Int) = bookmarkDao.deleteByPage(pageNumber)
+    suspend fun removeAllBookmarks() = bookmarkDao.deleteAll()
     suspend fun isPageBookmarked(pageNumber: Int): Boolean = bookmarkDao.isPageBookmarked(pageNumber)
 
     // Settings operations

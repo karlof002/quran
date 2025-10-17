@@ -10,8 +10,8 @@ import com.karlof002.quran.data.dao.*
 import com.karlof002.quran.data.models.*
 
 @Database(
-    entities = [Surah::class, Juz::class, Ayah::class, Bookmark::class, Settings::class],
-    version = 20,
+    entities = [Surah::class, Juz::class, Ayah::class, Bookmark::class, Settings::class, SearchHistory::class],
+    version = 21,
     exportSchema = false
 )
 abstract class QuranDatabase : RoomDatabase() {
@@ -20,6 +20,7 @@ abstract class QuranDatabase : RoomDatabase() {
     abstract fun ayahDao(): AyahDao
     abstract fun bookmarkDao(): BookmarkDao
     abstract fun settingsDao(): SettingsDao
+    abstract fun searchHistoryDao(): SearchHistoryDao
 
     companion object {
         @Volatile

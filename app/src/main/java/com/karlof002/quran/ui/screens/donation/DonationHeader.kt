@@ -1,4 +1,4 @@
- package com.karlof002.quran.ui.screens.donation
+package com.karlof002.quran.ui.screens.donation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -6,7 +6,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,7 +21,7 @@ fun DonationHeader() {
             text = "Support Quran Al-Kareem",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFEC407A),
+            color = MaterialTheme.colorScheme.primary,
             textAlign = TextAlign.Center
         )
 

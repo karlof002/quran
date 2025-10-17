@@ -77,13 +77,6 @@ fun BookmarksScreen(
         }
     }
 
-    // Adaptive padding based on screen size
-    val horizontalPadding = when (windowSize) {
-        com.karlof002.quran.ui.utils.WindowSizeClass.COMPACT -> 0.dp
-        com.karlof002.quran.ui.utils.WindowSizeClass.MEDIUM -> 16.dp
-        com.karlof002.quran.ui.utils.WindowSizeClass.EXPANDED -> 32.dp
-    }
-
     // Group bookmarks by date sections
     val bookmarkSections = remember(allBookmarks, selectedFilter) {
         val calendar = Calendar.getInstance()

@@ -24,13 +24,6 @@ fun HomeScreen(
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Surahs", "Juz")
 
-    // Adaptive padding and sizing based on screen size
-    val horizontalPadding = when (windowSize) {
-        WindowSizeClass.COMPACT -> 0.dp
-        WindowSizeClass.MEDIUM -> 16.dp
-        WindowSizeClass.EXPANDED -> 32.dp
-    }
-
     val titleFontSize = when (windowSize) {
         WindowSizeClass.COMPACT -> 24.sp
         WindowSizeClass.MEDIUM -> 28.sp
@@ -64,10 +57,8 @@ fun HomeScreen(
                 )
 
                 // Material 3 Tab Row
-                TabRow(
-                    selectedTabIndex = selectedTabIndex,
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentColor = MaterialTheme.colorScheme.primary
+                PrimaryTabRow(
+                    selectedTabIndex = selectedTabIndex
                 ) {
                     tabs.forEachIndexed { index, title ->
                         Tab(
@@ -79,9 +70,7 @@ fun HomeScreen(
                                     fontWeight = if (selectedTabIndex == index) FontWeight.Bold else FontWeight.Medium,
                                     fontSize = 15.sp
                                 )
-                            },
-                            selectedContentColor = MaterialTheme.colorScheme.primary,
-                            unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            }
                         )
                     }
                 }
@@ -103,4 +92,3 @@ fun HomeScreen(
         }
     }
 }
-

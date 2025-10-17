@@ -25,50 +25,47 @@ fun DonationPhoneLayout(
             .fillMaxSize()
             .widthIn(max = 600.dp)
             .verticalScroll(scrollState)
-            .padding(24.dp),
+            .padding(horizontal = 24.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
         // Animated Heart Icon
-        AnimatedHeartIcon(
-            heartScale = heartScale,
-            size = 100.dp,
-            iconSize = 50.dp
-        )
-
-        // Title with animated visibility
         AnimatedVisibility(
             visible = true,
-            enter = fadeIn() + slideInVertically()
+            enter = fadeIn() + scaleIn()
+        ) {
+            AnimatedHeartIcon(
+                heartScale = heartScale,
+                size = 100.dp,
+                iconSize = 50.dp
+            )
+        }
+
+        // Header
+        AnimatedVisibility(
+            visible = true,
+            enter = fadeIn(animationSpec = tween(600, delayMillis = 200)) +
+                    slideInVertically(animationSpec = tween(600, delayMillis = 200))
         ) {
             DonationHeader()
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Animated PayPal Card
+        // PayPal Button
         AnimatedVisibility(
             visible = true,
-            enter = fadeIn(animationSpec = tween(600, delayMillis = 300)) +
-                    slideInVertically(animationSpec = tween(600, delayMillis = 300))
+            enter = fadeIn(animationSpec = tween(600, delayMillis = 400)) +
+                    slideInVertically(animationSpec = tween(600, delayMillis = 400))
         ) {
             PayPalDonationCard(context = context, scope = scope)
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Animated thank you message
+        // Thank you message
         AnimatedVisibility(
             visible = true,
-            enter = fadeIn(animationSpec = tween(600, delayMillis = 500)) +
-                    slideInVertically(animationSpec = tween(600, delayMillis = 500))
+            enter = fadeIn(animationSpec = tween(600, delayMillis = 600)) +
+                    slideInVertically(animationSpec = tween(600, delayMillis = 600))
         ) {
             ThankYouCard()
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }
-
