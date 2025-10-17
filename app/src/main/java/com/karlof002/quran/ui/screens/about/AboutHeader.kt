@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.karlof002.quran.BuildConfig
 
 @Composable
 fun AboutHeader() {
@@ -33,7 +33,7 @@ fun AboutHeader() {
             textAlign = TextAlign.Center
         )
         Text(
-            text = "Version 1.0.0",
+            text = "Version ${BuildConfig.VERSION_NAME}",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center

@@ -150,8 +150,8 @@ fun SettingsScreen(
                             icon = Icons.Default.FormatSize,
                             value = fontSize,
                             onValueChange = { viewModel.setFontSize(it) },
-                            valueRange = 12f..24f,
-                            steps = 23,
+                            valueRange = 12f..30f,
+                            steps = 35,
                             iconColor = MaterialTheme.colorScheme.primary,
                             iconBackgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                         )
@@ -163,8 +163,8 @@ fun SettingsScreen(
                             icon = Icons.Default.TextFields,
                             value = infoTextSize,
                             onValueChange = { viewModel.setInfoTextSize(it) },
-                            valueRange = 10f..18f,
-                            steps = 15,
+                            valueRange = 3f..20f,
+                            steps = 33,
                             iconColor = MaterialTheme.colorScheme.primary,
                             iconBackgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
                         )
