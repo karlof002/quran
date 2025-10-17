@@ -26,10 +26,9 @@ abstract class QuranDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: QuranDatabase? = null
 
-        // Migration from version 16 to 17: Add infoTextSize column to settings table
+        // Migration from version 16 to 17: Add infoTextSize column
         private val MIGRATION_16_17 = object : Migration(16, 17) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // Add the new column with a default value of 14
                 database.execSQL("ALTER TABLE settings ADD COLUMN infoTextSize INTEGER NOT NULL DEFAULT 14")
             }
         }
@@ -65,18 +64,17 @@ abstract class QuranDatabase : RoomDatabase() {
             }
         }
 
-        // Migration from version 18 to 19: Add primaryColor column to settings table
+        // Migration from version 18 to 19: Add primaryColor column (later removed in 19->20)
         private val MIGRATION_18_19 = object : Migration(18, 19) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // Add the new column with default teal green color
-                database.execSQL("ALTER TABLE settings ADD COLUMN primaryColor INTEGER NOT NULL DEFAULT 16738909")
+                database.execSQL("ALTER TABLE settings ADD COLUMN primaryColor TEXT NOT NULL DEFAULT '#6200EE'")
             }
         }
 
-        // Migration from version 19 to 20: Remove primaryColor column from settings table
+        // Migration from version 19 to 20: Remove primaryColor column
         private val MIGRATION_19_20 = object : Migration(19, 20) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // SQLite doesn't support DROP COLUMN, so we need to recreate the table
+                // SQLite doesn't support DROP COLUMN, so recreate the table
                 // 1. Create new table without primaryColor
                 database.execSQL("""
                     CREATE TABLE settings_new (
@@ -104,6 +102,13 @@ abstract class QuranDatabase : RoomDatabase() {
             }
         }
 
+        // Migration from version 20 to 21: No schema changes, just version bump
+        private val MIGRATION_20_21 = object : Migration(20, 21) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // No schema changes needed, just version alignment
+            }
+        }
+
         fun getDatabase(context: Context): QuranDatabase {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
@@ -111,8 +116,14 @@ abstract class QuranDatabase : RoomDatabase() {
                     QuranDatabase::class.java,
                     "quran_database"
                 )
-                    .addMigrations(MIGRATION_16_17, MIGRATION_17_18, MIGRATION_18_19, MIGRATION_19_20)
-                    .fallbackToDestructiveMigration() // Only as last resort for other migrations
+                    .addMigrations(
+                        MIGRATION_16_17,
+                        MIGRATION_17_18,
+                        MIGRATION_18_19,
+                        MIGRATION_19_20,
+                        MIGRATION_20_21
+                    )
+                    .fallbackToDestructiveMigration() // Only as last resort for very old versions
                     .build()
                 INSTANCE = instance
                 instance
