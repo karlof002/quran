@@ -26,19 +26,30 @@ abstract class QuranDatabase : RoomDatabase() {
         @Volatile
         private var INSTANCE: QuranDatabase? = null
 
-        // Migration from version 16 to 17: Add infoTextSize column
+        // Migration from version 16 to 17: Add infoTextSize column and create search_history table
         private val MIGRATION_16_17 = object : Migration(16, 17) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE settings ADD COLUMN infoTextSize INTEGER NOT NULL DEFAULT 14")
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Add the new column with a default value of 14
+                db.execSQL("ALTER TABLE settings ADD COLUMN infoTextSize INTEGER NOT NULL DEFAULT 14")
+
+                // Create search_history table if it doesn't exist
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS search_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        query TEXT NOT NULL,
+                        resultType TEXT NOT NULL,
+                        timestamp INTEGER NOT NULL
+                    )
+                """)
             }
         }
 
         // Migration from version 17 to 18: Change fontSize and infoTextSize from INTEGER to REAL
         private val MIGRATION_17_18 = object : Migration(17, 18) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 // SQLite doesn't support ALTER COLUMN, so we need to recreate the table
                 // 1. Create new table with correct types
-                database.execSQL("""
+                db.execSQL("""
                     CREATE TABLE settings_new (
                         id INTEGER PRIMARY KEY NOT NULL,
                         isDarkMode INTEGER NOT NULL,
@@ -50,33 +61,54 @@ abstract class QuranDatabase : RoomDatabase() {
                 """)
 
                 // 2. Copy data from old table to new table
-                database.execSQL("""
+                db.execSQL("""
                     INSERT INTO settings_new (id, isDarkMode, fontSize, arabicFont, translationLanguage, infoTextSize)
                     SELECT id, isDarkMode, CAST(fontSize AS REAL), arabicFont, translationLanguage, CAST(infoTextSize AS REAL)
                     FROM settings
                 """)
 
                 // 3. Drop old table
-                database.execSQL("DROP TABLE settings")
+                db.execSQL("DROP TABLE settings")
 
                 // 4. Rename new table to old name
-                database.execSQL("ALTER TABLE settings_new RENAME TO settings")
+                db.execSQL("ALTER TABLE settings_new RENAME TO settings")
+
+                // Create search_history table if it doesn't exist
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS search_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        query TEXT NOT NULL,
+                        resultType TEXT NOT NULL,
+                        timestamp INTEGER NOT NULL
+                    )
+                """)
             }
         }
 
-        // Migration from version 18 to 19: Add primaryColor column (later removed in 19->20)
+        // Migration from version 18 to 19: Add primaryColor column to settings table
         private val MIGRATION_18_19 = object : Migration(18, 19) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE settings ADD COLUMN primaryColor TEXT NOT NULL DEFAULT '#6200EE'")
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Add the new column with default teal green color
+                db.execSQL("ALTER TABLE settings ADD COLUMN primaryColor INTEGER NOT NULL DEFAULT 16738909")
+
+                // Create search_history table if it doesn't exist
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS search_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        query TEXT NOT NULL,
+                        resultType TEXT NOT NULL,
+                        timestamp INTEGER NOT NULL
+                    )
+                """)
             }
         }
 
-        // Migration from version 19 to 20: Remove primaryColor column
+        // Migration from version 19 to 20: Remove primaryColor column from settings table
         private val MIGRATION_19_20 = object : Migration(19, 20) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                // SQLite doesn't support DROP COLUMN, so recreate the table
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // SQLite doesn't support DROP COLUMN, so we need to recreate the table
                 // 1. Create new table without primaryColor
-                database.execSQL("""
+                db.execSQL("""
                     CREATE TABLE settings_new (
                         id INTEGER PRIMARY KEY NOT NULL,
                         isDarkMode INTEGER NOT NULL,
@@ -88,24 +120,42 @@ abstract class QuranDatabase : RoomDatabase() {
                 """)
 
                 // 2. Copy data from old table to new table (excluding primaryColor)
-                database.execSQL("""
+                db.execSQL("""
                     INSERT INTO settings_new (id, isDarkMode, fontSize, arabicFont, translationLanguage, infoTextSize)
                     SELECT id, isDarkMode, fontSize, arabicFont, translationLanguage, infoTextSize
                     FROM settings
                 """)
 
                 // 3. Drop old table
-                database.execSQL("DROP TABLE settings")
+                db.execSQL("DROP TABLE settings")
 
                 // 4. Rename new table to old name
-                database.execSQL("ALTER TABLE settings_new RENAME TO settings")
+                db.execSQL("ALTER TABLE settings_new RENAME TO settings")
+
+                // Create search_history table if it doesn't exist
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS search_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        query TEXT NOT NULL,
+                        resultType TEXT NOT NULL,
+                        timestamp INTEGER NOT NULL
+                    )
+                """)
             }
         }
 
-        // Migration from version 20 to 21: No schema changes, just version bump
+        // Migration from version 20 to 21: Create search_history table
         private val MIGRATION_20_21 = object : Migration(20, 21) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                // No schema changes needed, just version alignment
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Create search_history table if it doesn't exist
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS search_history (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        query TEXT NOT NULL,
+                        resultType TEXT NOT NULL,
+                        timestamp INTEGER NOT NULL
+                    )
+                """)
             }
         }
 
@@ -123,7 +173,7 @@ abstract class QuranDatabase : RoomDatabase() {
                         MIGRATION_19_20,
                         MIGRATION_20_21
                     )
-                    .fallbackToDestructiveMigration() // Only as last resort for very old versions
+                    .fallbackToDestructiveMigration(dropAllTables = true) // Drop all tables as last resort
                     .build()
                 INSTANCE = instance
                 instance

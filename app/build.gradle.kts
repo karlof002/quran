@@ -23,7 +23,7 @@ android {
         applicationId = "com.karlof002.quran"
         minSdk = 24
         targetSdk = 36
-        versionCode = 9
+        versionCode = 10
         versionName = "1.4.334543454"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
